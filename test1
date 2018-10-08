@@ -9,6 +9,7 @@ import argparse
 
 
 class LinuxFlow():
+        #---Получаем текущую дату/время в OS Linux
         def data_parser(self):
                 proc = subprocess.Popen('date +%y%m%d%H', stdout=subprocess.PIPE, shell=True)
                 (out, err) = proc.communicate()
@@ -34,7 +35,7 @@ class ParserStr():
                 description = '''Скрипт для более удобного анализа логов NetFlow''',
                 epilog = '''(c) 2018.'''
                 )
-                parser.add_argument ('d',action='store', nargs='*',  help = 'Ключь поиска указанного ФОРМАТА', metavar = '2018 01 01 192.168.1.1')
+                parser.add_argument ('d',action='store', nargs='*',  help = 'Ключ поиска указанного ФОРМАТА', metavar = '2018 01 01 192.168.1.1')
                 return parser
 
 def main():
