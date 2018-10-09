@@ -10,56 +10,61 @@ import argparse
 
 class LinuxFlow():
         #---Получаем текущую дату/время в OS Linux
-        def data_parser(self):
-                proc = subprocess.Popen('date +%y%m%d%H', stdout=subprocess.PIPE, shell=True)
-                (out, err) = proc.communicate()
-                datpars = out.splitlines()
-                return  datpars[0]
-
-        def flowdef(self,data):
-                os.system('flow-cat /mypath/flow/*/20{}/20{}-{}/20{}-{}-{}/tmp-* | flow-print -f5'.format(data[0:2],data[0:2],data[2:4],data[0:2],data[2:4],data[4:6]))
+    def data_parser(self):
+        proc = subprocess.Popen('date +%y%m%d%H', stdout=subprocess.PIPE, shell=True)
+        (out, err) = proc.communicate()
+        datpars = out.splitlines()
+        return  datpars[0]
+    def flowdef(self, data):
+        fldif = os.listdir('/mnt/backup/flow/cisco2921/20{}/20{}-{}/20{}-{}-{}/'.format(data[0:2], 
+	data[0:2], data[2:4], data[0:2], data[2:4], data[4:6])
+        )
+        p = [[fldif[i],i] for i in range(0, len(fldif))]
+        print(p[10]) # !
         #------------------
 
-        def flowstat(self,args):
-                try:
-                        os.system('flow-cat /mypath/flow/*/{}/{}-{}/{}-{}-{}/ft-* | flow-print -f5 | grep {} '.format(args.d[0],args.d[0],args.d[1],args.d[0],args.d[1],args.d[2],args.d[3]))
-                        othet='Year={}'.format(args.d[0]),'Month={}'.format(args.d[1]),'Day={}'.format(args.d[2]),'IP={}'.format(args.d[3])
-                except IndexError:
-                        txt="Не введены обязательные ключи поиска"
-                print(txt)
+    def flowstat(self, args):
+        try:
+            os.system('flow-cat /mypath/flow/*/{}/{}-{}/{}-{}-{}/ft-* | flow-print -f5 | grep {} '.format(args.d[0], args.d[0],
+            args.d[1], args.d[0], args.d[1], args.d[2], args.d[3]))
+            #othet='Year={}'.format(args.d[0]),'Month={}'.format(args.d[1]),'Day={}'.format(args.d[2]),'IP={}'.format(args.d[3])
+        except IndexError:
+           txt = "Не введены обязательные ключи поиска"
+           print (txt)
 
 class ParserStr():
-        def stdio_parser (self):
-                parser = argparse.ArgumentParser(
-                prog = 'statnetflow',
-                description = '''Скрипт для более удобного анализа логов NetFlow''',
-                epilog = '''(c) 2018.'''
-                )
-                parser.add_argument ('d',action='store', nargs='*',  help = 'Ключ поиска указанного ФОРМАТА', metavar = '2018 01 01 192.168.1.1')
-                return parser
+    def stdio_parser(self):
+         parser = argparse.ArgumentParser(
+         prog = 'statnetflow',
+         description = '''Скрипт для более удобного анализа логов NetFlow''',
+         epilog = '''(c) 2018.'''
+         )
+         parser.add_argument ('d',action='store', nargs='*',  help = 'Ключ поиска указанного ФОРМАТА', 
+         metavar = '2018 01 01 192.168.1.1')
+         return parser
 
 def main():
         #------------------------------
-        if platform.system() == 'Windows':
-                c_lsdefault = WindowsDisk()
-                print('OS Windows')
-        if platform.system() == 'Linux':
-                c_lsdefault = LinuxFlow()
-                print('OS Linux')
+    if platform.system() == 'Windows':
+        c_lsdefault = WindowsDisk()
+        print ('OS Windows')
+    if platform.system() == 'Linux':
+        c_lsdefault = LinuxFlow()
+        print ('OS Linux')
         #--------------------
 
-        parser = ParserStr()
-        clskey=parser.stdio_parser()
-        args = clskey.parse_args()
+    parser = ParserStr()
+    clskey=parser.stdio_parser()
+    args = clskey.parse_args()
 
+    dat=LinuxFlow()
+    data=dat.data_parser()
+
+    if args.d == []:
         dat=LinuxFlow()
         data=dat.data_parser()
-
-        if args.d == []:
-                dat=LinuxFlow()
-                data=dat.data_parser()
-                c_lsdefault.flowdef(data)
-        else:
-                c_lsdefault.flowstat(args)
+        c_lsdefault.flowdef(data)
+    else:
+        c_lsdefault.flowstat(args)
 if __name__ == '__main__':
         main()
